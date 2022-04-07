@@ -11,7 +11,8 @@ const getEthereumContract = () => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const transactionContract = new ethers.Contract(contractAddress, contractABI, signer);
-
+    // const balance = await contract.getBalance(contractAddress);
+    const balance = await provider.getBalance("ethers.eth")
     return transactionContract;
 }
 
@@ -21,6 +22,7 @@ export const TransactionProvider  = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [transactionCount, setTransactionCount] = useState(window.localStorage.getItem('transactionCount'));
     const [transactions, setTransactions] = useState([]);
+    const [metaBalance, setMetabalance] = useState(0);
 
 
     const handleChange = (e, name) => {
@@ -52,14 +54,16 @@ export const TransactionProvider  = ({ children }) => {
       };
 
     const checkIfWalletIsConnected = async () => {
+       
         try {
             if(!ethereum) return alert("Pleasse install metamask");
 
             const accounts = await ethereum.request({ method: 'eth_accounts'});
-            
+            console.log(accounts)
             if(accounts.length) {
                 setCurrentAccount(accounts[0]);
-    
+             
+              
                getAllTransactions();
             }else{
                 console.log("No account found")
@@ -87,10 +91,15 @@ export const TransactionProvider  = ({ children }) => {
 
       
     const connectWallet = async () => {
+        const transactionContract = getEthereumContract();
         try {
             if(!ethereum) return alert("Please install metamask");
             const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
             setCurrentAccount(accounts[0]);
+            const balance =  transactionContract.getBalance();
+            const balanceConvert = ethers.utils.formatEther(balance)
+            setMetabalance(balanceConvert);
+            console.log(accounts);
         } catch (error) {
             console.log(error)
             throw new Error("No ethereum object.")
@@ -139,7 +148,7 @@ const sendTransaction = async () => {
 
    // Wrap these provider to the main.jsx so all components will have access to the connectWallet()
     return (
-        <TransactionContext.Provider value={{ connectWallet, currentAccount, formData,setFormData, sendTransaction, handleChange, isLoading,transactions}}>
+        <TransactionContext.Provider value={{ connectWallet, metaBalance, currentAccount, formData,setFormData, sendTransaction, handleChange, isLoading,transactions}}>
             { children }
         </TransactionContext.Provider>
     )

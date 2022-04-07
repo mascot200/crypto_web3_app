@@ -20,7 +20,7 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
 );
 
 const Welcome = () => {
-  const { connectWallet , currentAccount, sendTransaction, formData, handleChange, isLoading} = useContext(TransactionContext)
+  const { connectWallet , metaBalance, currentAccount, sendTransaction, formData, handleChange, isLoading} = useContext(TransactionContext)
 
 
 
@@ -93,6 +93,10 @@ const Welcome = () => {
                 </p>
                 <p className="text-white font-semibold text-lg mt-1">
                   Ethereum
+                </p>
+
+                <p className="text-white font-semibold text-lg mt-1">
+                  Balance : { metaBalance }
                 </p>
               </div>
             </div>
