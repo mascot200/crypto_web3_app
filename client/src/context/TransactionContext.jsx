@@ -11,8 +11,6 @@ const getEthereumContract = () => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const transactionContract = new ethers.Contract(contractAddress, contractABI, signer);
-    // const balance = await contract.getBalance(contractAddress);
-    const balance = await provider.getBalance("ethers.eth")
     return transactionContract;
 }
 
@@ -91,15 +89,17 @@ export const TransactionProvider  = ({ children }) => {
 
       
     const connectWallet = async () => {
-        const transactionContract = getEthereumContract();
+         
+   
         try {
+            const transactionContract = getEthereumContract();
             if(!ethereum) return alert("Please install metamask");
             const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
             setCurrentAccount(accounts[0]);
-            const balance =  transactionContract.getBalance();
-            const balanceConvert = ethers.utils.formatEther(balance)
-            setMetabalance(balanceConvert);
-            console.log(accounts);
+            let balance = await transactionContract.getBalance();
+            let convertedBaance =  ethers.utils.formatEther(balance);
+            setMetabalance(convertedBaance);
+           
         } catch (error) {
             console.log(error)
             throw new Error("No ethereum object.")

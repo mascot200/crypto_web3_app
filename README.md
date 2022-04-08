@@ -16,3 +16,7 @@ Tailwindcss is also used for the layout of the application.
  * Record transactions to the blockchain using ethers on the frontEnd and solidity on the backend
  * Get all transaction history from the blockchain
 
+## Added Features
+  * Added a getBalance function on solidity to get balance of the connected address
+  * Get address balance and display to the user
+

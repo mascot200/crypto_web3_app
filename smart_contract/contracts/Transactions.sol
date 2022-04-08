@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 contract Transactions {
     uint256 transactionCount;
+    
   
 
     event Transfer(address from, address receiver, uint amount, string message, uint256 timestamp, string keyword);
@@ -31,6 +32,10 @@ contract Transactions {
 
     function getTransactionCount() public view returns (uint256){
             return transactionCount;
+    }
+
+    function getBalance() public view returns(uint256){
+        return msg.sender.balance;
     }
 
    
