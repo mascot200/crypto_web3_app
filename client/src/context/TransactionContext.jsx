@@ -55,14 +55,12 @@ export const TransactionProvider  = ({ children }) => {
        
         try {
             if(!ethereum) return alert("Pleasse install metamask");
-
             const accounts = await ethereum.request({ method: 'eth_accounts'});
             console.log(accounts)
             if(accounts.length) {
                 setCurrentAccount(accounts[0]);
-             
-              
                getAllTransactions();
+               getWalletBalance();
             }else{
                 console.log("No account found")
             }
@@ -86,6 +84,19 @@ export const TransactionProvider  = ({ children }) => {
           throw new Error("No ethereum object");
         }
       };
+    
+    const getWalletBalance = async () => {
+        try {
+            if(!ethereum) return alert("Pleasse install metamask");
+            const transactionContract = getEthereumContract();
+            let balance = await transactionContract.getBalance();
+            let convertedBaance =  ethers.utils.formatEther(balance);
+            setMetabalance(convertedBaance);
+        } catch (error) {
+            console.log(error)
+            throw new Error("No ethereum object");
+        }
+    }
 
       
     const connectWallet = async () => {
@@ -106,44 +117,45 @@ export const TransactionProvider  = ({ children }) => {
         }
     }
 
-const sendTransaction = async () => {
-    try {
-        if(!ethereum) return alert("Pleasse install metamask");
-        const { addressTo, amount, keyword, message } = formData;
-        const transactionContract = getEthereumContract();
-        const parsedAmount = ethers.utils.parseEther(amount);
+    const sendTransaction = async () => {
+        try {
+            if(!ethereum) return alert("Pleasse install metamask");
+            const { addressTo, amount, keyword, message } = formData;
+            const transactionContract = getEthereumContract();
+            const parsedAmount = ethers.utils.parseEther(amount);
 
-        await ethereum.request({ 
-            method: 'eth_sendTransaction',
-            params: [{
-                from: currentAccount,
-                to: addressTo,
-                gas: '0x5208', // 21000 GWEI
-                value: parsedAmount._hex, // covert to hex value
+            await ethereum.request({ 
+                method: 'eth_sendTransaction',
+                params: [{
+                    from: currentAccount,
+                    to: addressTo,
+                    gas: '0x5208', // 21000 GWEI
+                    value: parsedAmount._hex, // covert to hex value
 
-            }]
-        });
+                }]
+            });
 
-       const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
-        setIsLoading(true);
-        console.log(`Loading - ${transactionHash.hash}`);
-        await transactionHash.wait();
-        setIsLoading(false);
-        console.log(`Success - ${ transactionHash.hash}`);
+        const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
+            setIsLoading(true);
+            console.log(`Loading - ${transactionHash.hash}`);
+            await transactionHash.wait();
+            setIsLoading(false);
+            console.log(`Success - ${ transactionHash.hash}`);
 
-        const transactionCount  = await transactionContract.getTransactionCount();
-        setTransactionCount(transactionCount.toNumber());
-       window.reload();
+            const transactionCount  = await transactionContract.getTransactionCount();
+            setTransactionCount(transactionCount.toNumber());
+        window.reload();
 
-    } catch (error) {
-        console.log(error)
+        } catch (error) {
+            console.log(error)
+        }
     }
-}
 
     // when page loads, run the checkIfWalletIsConnected()
     useEffect(() => {
         checkIfWalletIsConnected();
         checkIfTransactionsExists();
+        // getWalletBalance();
     }, []);
 
    // Wrap these provider to the main.jsx so all components will have access to the connectWallet()

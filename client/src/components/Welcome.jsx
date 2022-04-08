@@ -4,6 +4,7 @@ import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
 import { TransactionContext } from "../context/TransactionContext";
 import { shortenAddress } from "../utils/shortenAddress";
+import { shortenBalance } from "../utils/shortenBalance";
 import { Loader } from ".";
 
 const companyCommonStyles = "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
@@ -88,16 +89,22 @@ const Welcome = () => {
                 <BsInfoCircle fontSize={17} color="#fff" />
               </div>
               <div>
-                <p className="text-white font-light text-sm">
-                  { shortenAddress(currentAccount) }
-                </p>
-                <p className="text-white font-semibold text-lg mt-1">
-                  Ethereum
+                <p className="text-white font-semibold text-sm">
+                  Address:  { shortenAddress(currentAccount) }
                 </p>
 
-                <p className="text-white font-semibold text-lg mt-1">
-                  Balance : { metaBalance }
-                </p>
+                  {metaBalance != 0 && (
+                     <p className="text-white font-semibold text-lg mt-1">
+                     Balance : { shortenBalance(metaBalance) } ETH
+                   </p>
+                  )}
+
+                  {metaBalance == 0 && (
+                     <p className="text-white font-semibold text-lg mt-1">
+                     Balance : { metaBalance } ETH
+                   </p>
+                  )}
+               
               </div>
             </div>
           </div>
